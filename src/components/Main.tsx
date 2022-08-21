@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import Modal from '../components/Modal';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 import useMove from '../hooks/useMove';
-import Image from 'next/image';
 import { toast } from 'react-toastify';
 import useAudio from '../hooks/useAudio';
 import { trpc } from '../utils/trpc';
 import Button from './Button';
-import Background from '../../public/background.png'
 
 const countries = ['United Kingdom', 'Japan', 'Mexico', 'Italy', 'Australia', 'New Zealand', 'America', 'Taiwan'];
 
@@ -106,7 +104,7 @@ const Main = () => {
         <ReceiveMessageComponent country={country} isReceiving={showReceiveMessagePopup} />
       </Modal>
       <div onMouseMove={handleMouseMove} onClick={() => setShowChoicePopup(true)}>
-        <Image alt="boat image" src={Background} layout="fill" />
+        <img alt="boat image" src='/background.png' style={{ width: '100%', height: '100%' }} />
 
         <div className="absolute z-10 text-black font-bold right-10 top-5">
           <div>Sending from {myCountry}</div>
