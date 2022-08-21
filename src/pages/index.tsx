@@ -1,12 +1,10 @@
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import { trpc } from '../utils/trpc';
 
 const Main = dynamic(() => import('../components/Main'), { ssr: false });
 
 const Home: NextPage = () => {
-  const hello = trpc.useQuery(['example.hello', { text: 'from tRPC' }]);
   return (
     <>
       <Head>
