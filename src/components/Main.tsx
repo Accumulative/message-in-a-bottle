@@ -50,6 +50,7 @@ const Main = () => {
   const { x, y, handleMouseMove } = useMove();
   const { height, width } = useWindowDimensions();
   const [playing, toggle]: any = useAudio('/music.mp3');
+  const [playing2, toggle2]: any = useAudio('/waves.mp3');
 
   const yDiff = y - (height * 3) / 4;
   const xDiff = x - width / 2;
@@ -147,8 +148,12 @@ const Main = () => {
           </div>
         </div>
 
-        <div className="absolute z-11 right-20 bottom-10 text-black font-bold">
+        <div className="absolute z-11 right-20 bottom-24 text-black font-bold">
           <Button text="Toggle Music" onClick={() => toggle()} />
+        </div>
+
+        <div className="absolute z-11 right-20 bottom-10 text-black font-bold">
+          <Button text="Toggle Ambience" onClick={() => toggle2()} />
         </div>
       </div>
     </>
