@@ -24,19 +24,19 @@ const ReceiveMessageComponent = ({ toCountry, fromCountry, isReceiving }: any) =
 
 const AnimatedBoatComp = () => {
   const styles = useSpring({
-    from: { transform: "translateY(0%) rotate(0deg)" },
+    from: { transform: "translateY(0%) rotate(4deg)" },
     to: [
-      { transform: "translateY(10%) rotate(10deg)" },
-      { transform: "translateY(0%) rotate(0deg)"},
-      { transform: "translateY(10%) rotate(-10deg)" },
-      { transform: "translateY(0%) rotate(0deg)"},
+      { transform: "translateY(8%) rotate(8deg)" },
+      { transform: "translateY(0%) rotate(4deg)"},
+      { transform: "translateY(8%) rotate(0deg)" },
+      { transform: "translateY(0%) rotate(4deg)"},
     ],
-    config: { duration: 1000 },
+    config: { duration: 2000 },
     loop:true
   })
 
   return <animated.div style={styles}>
-    <img alt="boat image" src='/boat.png' width='200px' height='100%' />
+    <img alt="boat image" src='/boat.png' width='300px' height='100%' />
   </animated.div>;
 }
 const AnimatedBoat = React.memo(AnimatedBoatComp);
@@ -126,9 +126,10 @@ const Main = () => {
         <ReceiveMessageComponent country={country} isReceiving={showReceiveMessagePopup} />
       </Modal>
       <div onMouseMove={handleMouseMove}>
-        <img alt="background image" src='/background.png' style={{ width: '100vw', height: '100vh' }} onClick={() => setShowChoicePopup(true)}/>
+        <img alt="ocean image" src='/ocean.png' className='absolute top-0 w-screen h-screen' onClick={() => setShowChoicePopup(true)}/>
+        <img alt="sky image" src='/sky.png' className='absolute top-0 w-screen h-screen' onClick={() => setShowChoicePopup(true)}/>
 
-        <div className="absolute z-10 left-1/2 top-1/2">
+        <div className="absolute z-10 left-1/2 -translate-x-1/2 top-1/2">
           <AnimatedBoat />
         </div>
 
