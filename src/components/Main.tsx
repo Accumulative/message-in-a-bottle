@@ -7,6 +7,8 @@ import useAudio from '../hooks/useAudio';
 import { trpc } from '../utils/trpc';
 import Button from './Button';
 import Image from 'next/image';
+import { useSpring, animated } from 'react-spring'
+import React from 'react';
 
 const countries = ['United Kingdom', 'Japan', 'Mexico', 'Italy', 'Australia', 'New Zealand', 'America', 'Taiwan'];
 
@@ -19,6 +21,25 @@ const ReceiveMessageComponent = ({ toCountry, fromCountry, isReceiving }: any) =
 
   return <span>{message}</span>;
 }
+
+const AnimatedBoatComp = () => {
+  const styles = useSpring({
+    from: { transform: "translateY(0%) rotate(0deg)" },
+    to: [
+      { transform: "translateY(10%) rotate(10deg)" },
+      { transform: "translateY(0%) rotate(0deg)"},
+      { transform: "translateY(10%) rotate(-10deg)" },
+      { transform: "translateY(0%) rotate(0deg)"},
+    ],
+    config: { duration: 1000 },
+    loop:true
+  })
+
+  return <animated.div style={styles}>
+    <img alt="boat image" src='/boat.png' width='200px' height='100%' />
+  </animated.div>;
+}
+const AnimatedBoat = React.memo(AnimatedBoatComp);
 
 const Main = () => {
 
@@ -104,8 +125,12 @@ const Main = () => {
       <Modal actionButton={{ hide: true }} showModal={showReceiveMessagePopup} closeModel={() => setShowReceiveMessagePopup(false)} title={`Receive Message from ${country}`}>
         <ReceiveMessageComponent country={country} isReceiving={showReceiveMessagePopup} />
       </Modal>
-      <div onMouseMove={handleMouseMove} onClick={() => setShowChoicePopup(true)}>
-        <Image alt="boat image" src='/background.png' layout='fill' />
+      <div onMouseMove={handleMouseMove}>
+        <img alt="background image" src='/background.png' style={{ width: '100vw', height: '100vh' }} onClick={() => setShowChoicePopup(true)}/>
+
+        <div className="absolute z-10 left-1/2 top-1/2">
+          <AnimatedBoat />
+        </div>
 
         <div className="absolute z-10 text-black font-bold right-10 top-5">
           <div>Sending from {myCountry}</div>
@@ -119,6 +144,10 @@ const Main = () => {
           <div style={{ transform: `rotate(${angle}deg)`, transformOrigin: '0% 0%' }}>
             <span className="arrow"></span>
           </div>
+        </div>
+
+        <div className="absolute z-11 right-20 bottom-10 text-black font-bold">
+          <Button text="Toggle Music" onClick={() => toggle()} />
         </div>
       </div>
     </>
