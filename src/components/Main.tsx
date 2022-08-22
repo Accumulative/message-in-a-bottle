@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import useAudio from '../hooks/useAudio';
 import { trpc } from '../utils/trpc';
 import Button from './Button';
+import Image from 'next/image';
 
 const countries = ['United Kingdom', 'Japan', 'Mexico', 'Italy', 'Australia', 'New Zealand', 'America', 'Taiwan'];
 
@@ -104,7 +105,7 @@ const Main = () => {
         <ReceiveMessageComponent country={country} isReceiving={showReceiveMessagePopup} />
       </Modal>
       <div onMouseMove={handleMouseMove} onClick={() => setShowChoicePopup(true)}>
-        <img alt="boat image" src='/background.png' style={{ width: '100%', height: '100%' }} />
+        <Image alt="boat image" src='/background.png' layout='fill' />
 
         <div className="absolute z-10 text-black font-bold right-10 top-5">
           <div>Sending from {myCountry}</div>
