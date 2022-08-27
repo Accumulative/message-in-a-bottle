@@ -18,8 +18,8 @@ export const messageRouter = createRouter()
         data: {
           toCountry: req.input.toCountry,
           fromCountry: req.input.fromCountry,
-          text: req.input.text
-        }
+          text: req.input.text,
+        },
       });
-    }
-  })
+    },
+  });
