@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import Modal from '../components/Modal';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 import useMove from '../hooks/useMove';
@@ -49,19 +49,22 @@ const Main = () => {
 
   const [text, setText] = useState('');
   const [myCountry, setMyCountry] = useState('');
-  const { x, y, handleMouseMove } = useMove();
-  const { height, width } = useWindowDimensions();
+  const [country, setCountry] = useState('');
+  // const { x, y, handleMouseMove } = useMove();
+  // const { height, width } = useWindowDimensions();
   const [playing, toggle]: any = useAudio('/music.mp3');
   const [playing2, toggle2]: any = useAudio('/waves.mp3');
 
-  const yDiff = y - (height * 3) / 4;
-  const xDiff = x - width / 2;
-  const angle = Math.atan2(yDiff, xDiff) * (180 / Math.PI);
-  const country = countries[Math.floor((180 + angle) / Math.floor(360 / countries.length))] as string;
+  // const yDiff = y - (height * 3) / 4;
+  // const xDiff = x - width / 2;
+  // const angle = Math.atan2(yDiff, xDiff) * (180 / Math.PI);
+  // const countryIndex = Math.floor((180 + angle) / Math.floor(360 / countries.length));
+  // const country = countries[countryIndex] as string;
 
   const [showMessagePopup, setShowMessagePopup] = useState(false);
   const [showChoicePopup, setShowChoicePopup] = useState(false);
   const [showSendMessage, setShowSendMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [showReceiveMessagePopup, setShowReceiveMessagePopup] = useState(false);
 
   const CountryArrow = (props: any) => {
@@ -70,24 +73,40 @@ const Main = () => {
     const y = Math.round(60 * Math.sin(rotation));
 
     return (
-      <div>
+      <div onMouseOver={() => setCountry(name)} onMouseOut={() => setCountry('')} onClick={() => setShowMessagePopup(true)}>
         <div style={{ transform: `rotate(${rotation}deg) translate(18em) rotate(-${rotation}deg)` }}>
           <div
+            className='font-fipps'
             style={{
               transform: `rotate(${rotation + 90}deg)`,
-              width: 0,
-              height: 0,
-              border: 'solid 30px',
-              borderColor: 'transparent transparent black transparent',
-            }}
-          />
+              opacity: country === name ? '100%' : '40%'
+            }}>
+            <div
+              style={{
+                width: 0,
+                height: 0,
+                left: 18,
+                top: 13,
+                border: 'solid 40px',
+                borderColor: 'transparent transparent black transparent',
+              }}
+            />
+            <div
+              style={{
+                width: 0,
+                height: 0,
+                border: 'solid 30px',
+                borderColor: 'transparent transparent white transparent',
+              }}
+            />
+          </div>
         </div>
-        <div
+        {/* <div
           style={{ transform: `rotate(${rotation}deg) translate(20em) rotate(-${rotation}deg)` }}
           className="font-extrabold text-lg"
         >
           <span>{name}</span>
-        </div>
+        </div> */}
       </div>
     );
   };
@@ -110,31 +129,44 @@ const Main = () => {
   }, []);
 
   const onSendMessage = async (result: boolean) => {
-    setShowMessagePopup(false);
     if (result) {
-      setShowSendMessage(false);
-      await toast.promise(
-        () =>
-          createMessage.mutateAsync({
-            text,
-            toCountry: country,
-            fromCountry: myCountry,
-          }),
-        {
-          pending: `Sending message to ${country}`,
-          success: `Sent message to ${country}`,
-          error: {
-            render({ data }) {
-              console.log(data);
-              return 'Unexpected error';
+      try {
+        await toast.promise(
+          () =>
+            createMessage.mutateAsync({
+              text,
+              toCountry: country,
+              fromCountry: myCountry,
+            }),
+          {
+            pending: `Sending message to ${country}`,
+            success: `Sent message to ${country}`,
+            error: {
+              render({ data }) {
+                let errorMessage = 'Unexpected error';
+                try {
+                  errorMessage = JSON.parse(data.shape.message)[0].message;
+                } catch(e) {
+                  console.error(data);
+                }
+                setErrorMessage(errorMessage);
+                return errorMessage;
+              },
             },
           },
-        },
-        {
-          autoClose: 1500,
-        },
-      );
-      setText('');
+          {
+            autoClose: 1500,
+          },
+        );
+        setShowMessagePopup(false);
+        setErrorMessage('');
+        setShowSendMessage(false);
+        setText('');
+      } catch(e) {
+
+      }
+    } else {
+        setShowMessagePopup(false);
     }
   };
 
@@ -156,10 +188,23 @@ const Main = () => {
     }
   };
 
+  // eslint-disable-next-line react/display-name
+  const Arrows = memo(() => {
+    return <div className="circle-container -translate-y-3/4">
+        {countries.map((c, i) => (
+          <CountryArrow key={c} name={c} rotation={i * 45 + 225} />
+        ))}
+      </div>;
+  });
+
   return (
     <>
       <Modal showModal={showMessagePopup} closeModel={onSendMessage} title={`Send message to ${country}`}>
-        <textarea onChange={(e) => setText(e.target.value)} value={text} />
+        <div className='flex flex-col'>
+          {errorMessage && <span className='text-red-500'>{errorMessage}</span>}
+          <h3 className='text-xl font-bold mt-5'>Message</h3>
+          <textarea onChange={(e) => setText(e.target.value)} value={text} />
+        </div>
       </Modal>
       <Modal
         actionButton={{ hide: true }}
@@ -167,8 +212,8 @@ const Main = () => {
         closeModel={() => setShowChoicePopup(false)}
         title="Choose option"
       >
-        <Button text="Send Message" onClick={onSelectSendMessage} />
-        <Button text="Receive Message" onClick={onSelectReceiveMessage} />
+        <Button onClick={onSelectSendMessage}>Send Message</Button>
+        <Button onClick={onSelectReceiveMessage}>Receive Message</Button>
       </Modal>
       <Modal
         actionButton={{ hide: true }}
@@ -178,7 +223,7 @@ const Main = () => {
       >
         <ReceiveMessageComponent toCountry={country} isReceiving={showReceiveMessagePopup} />
       </Modal>
-      <div onMouseMove={handleMouseMove}>
+      <div>
         <img
           alt="ocean image"
           src="/ocean.png"
@@ -200,29 +245,25 @@ const Main = () => {
 
         {showSendMessage && (
           <>
-            <div className="absolute z-10 left-1/2 top-1/2 text-black font-bold">
+            <div className="absolute z-10 left-1/2 top-1/4 -translate-x-1/2 text-black font-bold text-5xl font-fipps">
               <div>{country}</div>
             </div>
 
-            <div className="absolute z-10 left-1/2 top-3/4">
+            {/* <div className="absolute z-10 left-1/2 top-3/4">
               <div style={{ transform: `rotate(${angle}deg)`, transformOrigin: '0% 0%' }}>
                 <span className="arrow"></span>
               </div>
-            </div>
+            </div> */}
 
             <div className="absolute z-11 right-20 bottom-36 text-black font-bold">
-              <Button color="red" text="Cancel send" onClick={() => setShowSendMessage(false)} />
+              <Button color="red" onClick={() => setShowSendMessage(false)}>Cancel send</Button>
             </div>
           </>
         )}
 
         <div className="absolute z-10 left-1/2 -translate-x-1/2 top-1/2">
           <AnimatedBoat />
-          <div className="circle-container -translate-y-3/4">
-            {countries.map((c, i) => (
-              <CountryArrow key={c} name={c} rotation={i * 45} />
-            ))}
-          </div>
+          {showSendMessage && (<Arrows />)}
         </div>
 
         <div className="absolute z-10 text-black font-bold right-10 top-5">
@@ -230,11 +271,11 @@ const Main = () => {
         </div>
 
         <div className="absolute z-11 right-20 bottom-24 text-black font-bold">
-          <Button text="Toggle Music" onClick={() => toggle()} />
+          <Button onClick={() => toggle()}>Toggle Music</Button>
         </div>
 
         <div className="absolute z-11 right-20 bottom-12 text-black font-bold">
-          <Button text="Toggle Ambience" onClick={() => toggle2()} />
+          <Button onClick={() => toggle2()}>Toggle Ambience</Button>
         </div>
       </div>
     </>

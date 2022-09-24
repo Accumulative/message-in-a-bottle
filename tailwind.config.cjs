@@ -9,6 +9,9 @@ module.exports = {
       colors: {
         red: colors.red,
       },
+      fontFamily: {
+        fipps: ["fipps"],
+      },
     },
   },
   plugins: [],
