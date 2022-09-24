@@ -202,7 +202,7 @@ const Main = () => {
       <Modal showModal={showMessagePopup} closeModel={onSendMessage} title={`Send message to ${country}`}>
         <div className='flex flex-col'>
           {errorMessage && <span className='text-red-500'>{errorMessage}</span>}
-          <h3 className='text-xl font-bold mt-5'>Message</h3>
+          <h3 className='text-xl font-bold m-5'>Message</h3>
           <textarea onChange={(e) => setText(e.target.value)} value={text} />
         </div>
       </Modal>
@@ -256,7 +256,7 @@ const Main = () => {
             </div> */}
 
             <div className="absolute z-11 right-20 bottom-36 text-black font-bold">
-              <Button color="red" onClick={() => setShowSendMessage(false)}>Cancel send</Button>
+              <Button isCancel onClick={() => setShowSendMessage(false)}>Cancel send</Button>
             </div>
           </>
         )}

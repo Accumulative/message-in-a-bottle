@@ -25,21 +25,13 @@ export default function Modal(props: IProps) {
                 {/*header*/}
                 <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                   <h3 className="text-3xl font-semibold">{title}</h3>
-                  <button
-                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                    onClick={() => closeModel(false)}
-                  >
-                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                      ×
-                    </span>
-                  </button>
                 </div>
                 {/*body*/}
                 <div className="relative p-6 flex-auto">{children}</div>
                 {/*footer*/}
                 <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
                   <Button
-                    color='red'
+                    isCancel
                     onClick={() => closeModel(false)}
                   >
                     Close
